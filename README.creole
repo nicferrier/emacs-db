@@ -27,10 +27,10 @@ Call //func// for every record in //db// optionally //query// filter.
 //func// should take 2 arguments:
 
 {{{
-  KEY //db//-VALUE
+  key db-value
 }}}
 
-where the //db//-VALUE is whatever the //db// has attached to the
+where the DB-VALUE is whatever the //db// has attached to the
 specified KEY.
 
 This returns an alist of the KEY and the value the function
