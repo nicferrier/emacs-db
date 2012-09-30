@@ -18,6 +18,12 @@ Make a DB based on the //reference//.
 
 Get the value from the //db// with the //key//.
 
+=== db-put key value db ===
+
+Put a new //value// into the //db// with the specified //key//.
+
+Return the //value// as it has been put into the //db//.
+
 === db-map func db &optional query filter ===
 
 Call //func// for every record in //db// optionally //query// filter.
@@ -36,12 +42,6 @@ specified KEY.
 This returns an alist of the KEY and the value the function
 returned.  If //filter// is [[t]] then only pairs with a value are
 returned.
-
-=== db-put key value db ===
-
-Put a new //value// into the //db// with the specified //key//.
-
-Return the //value// as it has been put into the //db//.
 
 === db-query db query ===
 
@@ -100,3 +100,20 @@ To make a {{{db}}} with the hash implementation:
 }}}
 
 Obviously, most often you will assign the db to a global variable.
+
+{{{
+(defvar my-db 
+  (db-make 
+   `(db-hash 
+     :filename ,(format "/var/cache/some-file"))))
+
+(db-put "001" '(("a" . 10)("b" . 20)) my-db)
+(db-put "002" '(("a" . 17)("b" . "hello")("xyz" . "well!")) my-db)
+(db-get "002" my-db)
+}}}
+
+results in:
+
+{{{
+(("a" . 17)("b" . "hello")("xyz" . "well!"))
+}}}
