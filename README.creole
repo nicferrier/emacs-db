@@ -1,0 +1,93 @@
+An EmacsLisp interface to key/value stores (Mongo, Postgresql Hstore,
+etc..) with a simple default implementation based on EmacsLisp Hashtables.
+
+== The interface ==
+
+The idea behind this is to make an interface for interacting with
+simple key/value database stores that is portable across all such
+stores. So you can make code once but swap out the database with
+relative ease.
+
+The interface includes the following functions:
+
+=== db-make reference ===
+
+Make a DB based on the //reference//.
+
+=== db-get key db ===
+
+Get the value from the //db// with the //key//.
+
+=== db-map func db &optional query filter ===
+
+Call //func// for every record in //db// optionally //query// filter.
+
+//query//, if specified, should be a list of query terms.
+
+//func// should take 2 arguments:
+
+{{{
+  KEY //db//-VALUE
+}}}
+
+where the //db//-VALUE is whatever the //db// has attached to the
+specified KEY.
+
+This returns an alist of the KEY and the value the function
+returned.  If //filter// is [[t]] then only pairs with a value are
+returned.
+
+=== db-put key value db ===
+
+Put a new //value// into the //db// with the specified //key//.
+
+Return the //value// as it has been put into the //db//.
+
+=== db-query db query ===
+
+Do //query// on //db// and return the result.
+
+This is [[db-map]] with an identity function.
+
+
+== Query language ==
+
+{{{db}}} uses the query language provided by the {{{kv}}} library,
+which is implemented as a mapping function test on ever value by the
+persistent hashtable implementation.
+
+The language should be translatable to just about any database query
+language (Mongo, SQL, etc...).
+
+There are only 3 constructs currently, {{{|}}}, {{{&}}} and {{{=}}}.
+
+An expression could be:
+
+{{{
+(= field-name value)
+}}}
+
+To select any record where {{{field-name}}} has the {{{value}}}
+
+{{{
+(|(= field-name value)(= other-field other-value))
+}}}
+
+To select any record where {{{field-name}}} has the {{{value}}} 
+or {{{other-field}}} has the value {{{other-value}}}
+
+{{{
+(&(= field-name value)(= other-field other-value))
+}}}
+
+To select any record where {{{field-name}}} has the {{{value}}} 
+and {{{other-field}}} has the value {{{other-value}}}.
+
+Logical combinations of {{{|}}} and {{{&}}} are also possible.
+
+
+== Hashtable implementation ==
+
+{{{db}}} comes with a simple implementation which can store any
+EmacsLisp object (though alists would most usually be preferred).
+
