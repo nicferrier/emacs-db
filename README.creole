@@ -91,3 +91,12 @@ Logical combinations of {{{|}}} and {{{&}}} are also possible.
 {{{db}}} comes with a simple implementation which can store any
 EmacsLisp object (though alists would most usually be preferred).
 
+To make a {{{db}}} with the hash implementation:
+
+{{{
+(db-make 
+  `(db-hash 
+     :filename ,(format "/var/cache/some-file")))
+}}}
+
+Obviously, most often you will assign the db to a global variable.
