@@ -124,7 +124,9 @@ If the filename exists then it is loaded into the database."
               :get 'db-hash-get
               :put 'db-hash-put
               :map 'db-hash-map
-              :query-equal 'kvassoq=
+              :query-equal (or
+                            (plist-get (cdr reference) :query-equal)
+                            'kvassoq=)
               :filename filename)))
     (when (and filename
                (file-exists-p (concat filename ".elc")))

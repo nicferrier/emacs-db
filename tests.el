@@ -44,6 +44,25 @@
          ("surname" . "Test")))
       (db-map 'kvidentity db '(= "username" "test001"))))))
 
+(ert-deftest db-query-deep ()
+  "Test the query interface with a dotted query."
+  (let ((db (db-make '(db-hash :query-equal kvdotassoc=))))
+    (db-put "test001"
+            '(("username" . "test001")
+              ("details" . (("title" . "Miss")
+                            ("surname" . "Test")))) db)
+    (db-put "test002"
+            '(("username" . "test002")
+              ("details" .(("title" . "Mr")
+                           ("surname" . "Tester")))) db)
+    (should
+     (equal
+      '(("test001"
+         ("username" . "test001")
+         ("details" . (("title" . "Miss")
+                       ("surname" . "Test")))))
+      (db-query db '(= "details.surname" "Test"))))))
+
 
 (ert-deftest db-hash--save ()
   "Test the saving of a hash db."
