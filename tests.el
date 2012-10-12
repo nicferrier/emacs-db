@@ -42,7 +42,7 @@
          ("username" . "test001")
          ("title" . "Miss")
          ("surname" . "Test")))
-      (db-map 'kvidentity db '(= "username" "test001"))))))
+      (db-query db '(= "username" "test001"))))))
 
 (ert-deftest db-query-deep ()
   "Test the query interface with a dotted query."
