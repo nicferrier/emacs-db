@@ -176,7 +176,9 @@ This is very useful for testing.")
 
 The QUERY is ignored.  We never filter."
   (let* ((equal-fn (plist-get db :query-equal))
-         (filterfn (kvquery->func query :equal-func equal-fn)))
+         (filterfn (if query
+                       (kvquery->func query :equal-func equal-fn)
+                       'identity)))
     (maphash
      (lambda (key value)
        (when (funcall filterfn value)

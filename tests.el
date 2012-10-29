@@ -44,6 +44,29 @@
          ("surname" . "Test")))
       (db-query db '(= "username" "test001"))))))
 
+(ert-deftest db-map ()
+  "Test the mapping."
+  (let (collected
+        (db (db-make '(db-hash :query-equal kvdotassoc=)))
+        (data '(("test001"
+                 ("username" . "test001")
+                 ("title" . "Miss")
+                 ("surname" . "Test"))
+                ("test002"
+                 ("username" . "test002")
+                 ("title" . "Mr")
+                 ("surname" . "Test")))))
+    (loop for (key . value) in data
+       do (db-put key value db))
+    (db-map (lambda (key value)
+              (setq
+               collected
+               (acons key value collected))) db)
+    (should
+     (equal
+      (kvalist-sort collected 'kvcmp)
+      (kvalist-sort data 'kvcmp)))))
+
 (ert-deftest db-query-deep ()
   "Test the query interface with a dotted query."
   (let ((db (db-make '(db-hash :query-equal kvdotassoc=))))
