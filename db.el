@@ -253,6 +253,11 @@ VALUE being the returned value from the `:source' database."
 
 (puthash 'db-filter 'db-filter db--types)
 
+(defun db-change-timestamp ()
+  "Place a timestamp in the kill-ring for a db change log."
+  (interactive)
+  (kill-new (format-time-string "\"%Y%M%d%H%M%S%N\""(current-time))))
+
 (provide 'db)
 
 ;;; db.el ends here
