@@ -44,7 +44,11 @@
   (require 'cl))
 (require 'kv)
 
-(defvar db--types (make-hash-table :test 'eq)
+(defun db/make-type-store ()
+  "Make the type store."
+  (make-hash-table :test 'eq))
+
+(defvar db/types (db/make-type-store)
   "Hash of database type ids against funcs?")
 
 (defun* db-make (reference)
@@ -56,7 +60,7 @@
       ;; this should be part of what we find when we look it up?
       (db-hash reference)
       ;; Otherwise look it up...
-      (let ((db-func (gethash (car reference) db--types)))
+      (let ((db-func (gethash (car reference) db/types)))
         (if (functionp db-func)
             (funcall db-func reference)
             ;; there should be a specific db error
@@ -139,6 +143,9 @@ If the filename exists then it is loaded into the database."
   (let ((filename (plist-get db :filename)))
     (when filename
       (load-file (concat filename ".elc"))
+      ;; Note - if this fails it may be because the file isn't
+      ;; portable the elc file contains a variable for the original
+      ;; filename of the db, this is obviously bad.
       (plist-put db :db (symbol-value (intern filename))))))
 
 (defvar db-hash-do-not-save nil
@@ -253,7 +260,7 @@ VALUE being the returned value from the `:source' database."
               :source (plist-get ref-plist :source))))
     db))
 
-(puthash 'db-filter 'db-filter db--types)
+(puthash 'db-filter 'db-filter db/types)
 
 (defun db-change-timestamp ()
   "Place a timestamp in the kill-ring for a db change log."
