@@ -267,6 +267,18 @@ VALUE being the returned value from the `:source' database."
   (interactive)
   (kill-new (format-time-string "\"%Y%M%d%H%M%S%N\""(current-time))))
 
+(defmacro db-change (change-db timestamp &rest change)
+  "Do CHANGE and make a record in the CHANGE-DB with TIMESTAMP."
+  (declare (indent 2))
+  (let ((cdbv (make-symbol "cdbv"))
+        (tsv (make-symbol "tsv")))
+  `(let ((,cdbv ,change-db)
+         (,tsv ,timestamp))
+     (unless (db-get ,tsv ,cdbv)
+       (progn
+         (progn ,@change)
+         (db-put ,tsv (list (cons "timestamp" ,tsv)) ,cdbv))))))
+
 (provide 'db)
 
 ;;; db.el ends here
