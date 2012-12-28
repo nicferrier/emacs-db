@@ -6,8 +6,8 @@
 ;; Maintainer: Nic Ferrier <nferrier@ferrier.me.uk>
 ;; Keywords: data, lisp
 ;; Created: 23rd September 2012
-;; Package-Requires: ((kv "0.0.9"))
-;; Version: 0.0.2
+;; Package-Requires: ((kv "0.0.11"))
+;; Version: 0.0.3
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
