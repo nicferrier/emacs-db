@@ -79,7 +79,8 @@ Return the VALUE as it has been put into the DB."
 (defun db-map (func db &optional query filter)
   "Call FUNC for every record in DB optionally QUERY filter.
 
-QUERY, if specified, should be a list of query terms.
+QUERY, if specified, should be a list of query terms as specified
+by `kvquery->func'.
 
 FUNC should take 2 arguments:
 
@@ -109,6 +110,8 @@ returned."
 
 (defun db-query (db query)
   "Do QUERY on DB and return the result.
+
+The query is as specified by `kvquery->func'.
 
 This is `db-map' with an identity function."
   (db-map 'kvidentity db query))
