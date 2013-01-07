@@ -125,38 +125,49 @@ include a `:filename' key arg to point to a file:
   '(db-hash :filename \"/var/local/db/auth-db\")
 
 If the filename exists then it is loaded into the database."
-  (let* ((filename (plist-get (cdr reference) :filename))
+  (let* ((db-plist (cdr reference))
+         (filename (plist-get db-plist :filename))
+         (from-filename (plist-get db-plist :from-filename)) 
          (db (list
               :db (make-hash-table :test 'equal)
               :get 'db-hash-get
               :put 'db-hash-put
               :map 'db-hash-map
               :query-equal (or
-                            (plist-get (cdr reference) :query-equal)
+                            (plist-get db-plist :query-equal)
                             'kvassoq=)
-              :filename filename)))
+              :filename filename
+              :from-filename from-filename)))
     (when (and filename
                (file-exists-p (concat filename ".elc")))
-      (db-hash--read db))
+      (db-hash/read db))
     ;; Return the database
     db))
 
-(defun db-hash--read (db)
+(defun db-hash/read (db)
   "Loads the DB."
-  (let ((filename (plist-get db :filename)))
+  (let* ((filename (plist-get db :filename))
+         (source-filename ; this is needed for the crappy old way of
+                          ; saving with a unique filename based symbol
+          (or
+           (plist-get db :from-filename)
+           filename)))
     (when filename
-      (load-file (concat filename ".elc"))
-      ;; Note - if this fails it may be because the file isn't
-      ;; portable the elc file contains a variable for the original
-      ;; filename of the db, this is obviously bad.
-      (plist-put db :db (symbol-value (intern filename))))))
+      (plist-put
+       db :db
+       (catch 'return
+         (progn
+           ;; The new saving mechanism causes that throw
+           (load-file (concat filename ".elc"))
+           ;; the old way used unique symbols
+           (symbol-value (intern source-filename))))))))
 
 (defvar db-hash-do-not-save nil
   "If `t' then do not save the database.
 
 This is very useful for testing.")
 
-(defun db-hash--save (db)
+(defun db-hash/save (db)
   "Saves the DB."
   (unless db-hash-do-not-save
     (let ((filename (plist-get db :filename)))
@@ -169,13 +180,13 @@ This is very useful for testing.")
         (with-temp-file (concat filename ".el")
           (erase-buffer)
           (let ((fmt-obj (format
-                          "(setq %s (eval-when-compile %S))"
-                          (intern filename)
+                          "(throw 'return %S)"
                           (plist-get db :db))))
             (insert fmt-obj)))
         ;; And compile it and delete the original
         (byte-compile-file (concat filename ".el"))
         (delete-file (concat filename ".el"))))))
+
 
 (defun db-hash-get (key db)
   (let ((v (gethash key (plist-get db :db))))
@@ -199,10 +210,10 @@ The QUERY is ignored.  We never filter."
   (let ((v (puthash key value (plist-get db :db))))
     ;; Instead of saving every time we could simply signal an update
     ;; and have a timer do the actual save.
-    (db-hash--save db)
+    (db-hash/save db)
     v))
 
-(defvar db--hash-clear-history nil
+(defvar db/hash-clear-history nil
   "History variable for completing read.")
 
 (defun db-hash-clear (db)
@@ -216,7 +227,7 @@ The QUERY is ignored.  We never filter."
             nil
             't
             nil
-            'db--hash-clear-history)))))
+            'db/hash-clear-history)))))
   (clrhash (plist-get db :db))
   (if (file-exists-p (plist-get db :filename))
       (delete-file (plist-get db :filename))))
