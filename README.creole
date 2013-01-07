@@ -1,3 +1,5 @@
+= Emacs Db - Key/Values stores for Emacs =
+
 An EmacsLisp interface to key/value stores (Mongo, Postgresql Hstore,
 etc..) with a simple default implementation based on EmacsLisp Hashtables.
 
