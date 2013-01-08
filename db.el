@@ -116,6 +116,19 @@ The query is as specified by `kvquery->func'.
 This is `db-map' with an identity function."
   (db-map 'kvidentity db query))
 
+
+;;; Generic utility functions
+
+(defun db-copy (src-db dest-db)
+  "Copy the data from SRC-DB into DEST-DB."
+  (db-map (lambda (key value)
+            ;;(unless (db-get key dest-db)
+            (progn
+              (db-put key value dest-db))) src-db))
+
+
+;;; Hash implementation
+
 (defun db-hash (reference)
   "Make a db-hash database.
 
