@@ -87,21 +87,21 @@
       (db-query db '(= "details.surname" "Test"))))))
 
 
-(ert-deftest db-hash--save ()
+(ert-deftest db-hash/save ()
   "Test the saving of a hash db."
   (unwind-protect
        (progn
          (let ((db (db-make
-                    ;; You shouldn't use an extension but let elnode deal
+                    ;; You shouldn't use an extension but let db deal
                     ;; with it.
                     '(db-hash :filename "/tmp/test-db"))))
            ;; Override the save so it does nothing from put
-           (flet ((db-hash--save (db)
+           (flet ((db-hash/save (db)
                     t))
              (db-put 'test1 "value1" db)
              (db-put 'test2 "value2" db))
            ;; And now save
-           (db-hash--save db))
+           (db-hash/save db))
          ;; And now load in a different scope
          (let ((db (db-make
                     '(db-hash :filename "/tmp/test-db"))))

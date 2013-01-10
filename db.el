@@ -140,7 +140,7 @@ include a `:filename' key arg to point to a file:
 If the filename exists then it is loaded into the database."
   (let* ((db-plist (cdr reference))
          (filename (plist-get db-plist :filename))
-         (from-filename (plist-get db-plist :from-filename)) 
+         (from-filename (plist-get db-plist :from-filename))
          (db (list
               :db (make-hash-table :test 'equal)
               :get 'db-hash-get
