@@ -137,7 +137,14 @@ include a `:filename' key arg to point to a file:
 
   '(db-hash :filename \"/var/local/db/auth-db\")
 
-If the filename exists then it is loaded into the database."
+If the filename exists then it is loaded into the database.
+
+:from-filename let's you specify the source location the db will
+be read from.  The first version of the hash db tied databases to
+specific filenames so you could not easily load a db from one
+file location into another.  This has been fixed but if you need
+to work with a previous version's database you can use
+the :from-filename to specify where the db file was located."
   (let* ((db-plist (cdr reference))
          (filename (plist-get db-plist :filename))
          (from-filename (plist-get db-plist :from-filename))
