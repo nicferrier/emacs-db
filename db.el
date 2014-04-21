@@ -54,9 +54,7 @@
 (defun* db-make (reference)
   "Make a DB based on the REFERENCE."
   (if (and (listp reference)
-           (eq
-            'db-hash
-            (car reference)))
+           (eq 'db-hash (car reference)))
       ;; this should be part of what we find when we look it up?
       (db-hash reference)
       ;; Otherwise look it up...
