@@ -119,3 +119,29 @@ results in:
 {{{
 (("a" . 17)("b" . "hello")("xyz" . "well!"))
 }}}
+
+=== Testing ===
+
+Hash Db's are tied to filenames so to test them you often have to
+manage that persistence:
+
+{{{
+(unwind-protect
+     (let ((mydb (db-make `(db-hash :filename "/tmp/mydb")))
+           (json 
+             (with-temp-buffer
+              (insert-file-contents "~/work/elmarmalade/users-mongo.json")
+              (goto-char (point-min))
+              (json-read))))
+       (--each json (db-put (car it) (cdr it) mydb))
+       (list (db-get 'triss mydb)
+             (db-get 'nicferrier mydb)))
+  (delete-file "/tmp/mydb.elc"))
+}}}
+
+Note the deleting of the {{{elc}}} file. That's how the hash db is
+stored. 
+
+Alternately one could use {{{fakir-file}}} (see the fakir package) to
+mock the file system. But that's harder than just creating and
+throwing away the file.
